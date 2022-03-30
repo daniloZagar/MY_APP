@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 const cache: any = {};
 const useFetch = (url: string) => {
   const [status, setStatus] = useState("idle");
   const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!url) return;

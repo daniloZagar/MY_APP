@@ -1,23 +1,39 @@
-import React, { useEffect, useState } from "react";
-import useInfiniteScroll from "../../hooks/useInfiniteScroll";
-import useFetch from "../../hooks/useFetch";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState, useRef } from "react";
+import LaunchesData from "../../types/launches.type";
+
 export default function LaunchesList() {
   const [lastElement, setLastElement] = useState<any>(null);
-  const { intersect, observer } = useInfiniteScroll();
   const [offset, setOffset] = useState(0);
+  const [launches, setLaunches] = useState<any[]>([]);
   const url = `https://api.spacexdata.com/v3/launches?limit=20&offset=${offset}`;
-  const { status, data } = useFetch(url);
-  const [launches, setLaunches] = useState(data);
 
+  const observer = useRef(
+    new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting) {
+        setOffset((prev) => prev + 20);
+      }
+    })
+  );
+  const getLaunches = async () => {
+    const response = await axios
+      .get(url)
+      .then((response) => response.data)
+      .catch((err) => console.log(err));
+    setLaunches((prev) => [...prev, ...response]);
+  };
+  useEffect(() => {
+    if (offset <= launches.length) {
+      getLaunches();
+    }
+  }, [offset]);
   useEffect(() => {
     const currentElement = lastElement;
     const currentObserver = observer.current;
-    setLaunches(data);
+
     if (currentElement) {
       currentObserver.observe(currentElement);
-      setOffset((prev) => prev + 20);
-      setLaunches(launches.concat(data));
     }
 
     return () => {
@@ -25,16 +41,14 @@ export default function LaunchesList() {
         currentObserver.unobserve(currentElement);
       }
     };
-  }, []);
-  function launchLink(id: number) {
-    return `/launches/${id}`;
-  }
+  }, [lastElement]);
+
   return (
     <div>
       {launches.map((launch, index) => {
         return (
-          <div key={index} ref={setLastElement}>
-            <p className="text-5xl">{launch["flight_number"]}</p>
+          <div className="text-5xl" ref={setLastElement} key={index}>
+            <div>{launch["flight_number"]}</div>
           </div>
         );
       })}
