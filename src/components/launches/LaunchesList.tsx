@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import LaunchesData from "../../types/launches.type";
+import { Link } from "react-router-dom";
+import LaunchesItem from "./LaunchesItem";
 
 export default function LaunchesList() {
   const [lastElement, setLastElement] = useState<any>(null);
   const [offset, setOffset] = useState(0);
   const [launches, setLaunches] = useState<any[]>([]);
-  const url = `https://api.spacexdata.com/v3/launches?limit=20&offset=${offset}`;
+  const url = `${process.env.REACT_APP_BASE_URL}?limit=20&offset=${offset}`;
 
   const observer = useRef(
     new IntersectionObserver((entries) => {
@@ -17,11 +18,20 @@ export default function LaunchesList() {
     })
   );
   const getLaunches = async () => {
-    const response = await axios
-      .get(url)
-      .then((response) => response.data)
-      .catch((err) => console.log(err));
-    setLaunches((prev) => [...prev, ...response]);
+    try {
+      const response = await axios
+        .get(url)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((err) => console.log(err));
+      setLaunches((prev) => [...prev, ...response]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const showLaunch = (id: number) => {
+    return `/launches/${id}`;
   };
   useEffect(() => {
     if (offset <= launches.length) {
@@ -44,11 +54,18 @@ export default function LaunchesList() {
   }, [lastElement]);
 
   return (
-    <div>
-      {launches.map((launch, index) => {
+    <div className="grid grid-cols-1 lg:grid-cols-3">
+      {launches.map((launch) => {
         return (
-          <div className="text-5xl" ref={setLastElement} key={index}>
-            <div>{launch["flight_number"]}</div>
+          <div key={launch.flight_number}>
+            <Link to={showLaunch(launch.flight_number)} ref={setLastElement}>
+              <LaunchesItem
+                flight_number={launch.flight_number}
+                mission_name={launch.mission_name}
+                mission_patch_small={launch.links.mission_patch_small}
+                launch_year={launch.launch_year}
+              ></LaunchesItem>
+            </Link>
           </div>
         );
       })}

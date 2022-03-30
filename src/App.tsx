@@ -3,12 +3,19 @@ import "./App.css";
 import Navbar from "./components/navbar/Navbar";
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import LaunchesDetails from "./views/LaunchesDetails";
+import loader from "./assets/images/loader.png";
 const Home = lazy(() => import("./views/Home"));
 const Launches = lazy(() => import("./views/Launches"));
 const NotFoundPage = lazy(() => import("./views/NotFoundPage"));
 function App() {
   return (
-    <Suspense fallback={<div>Loading... </div>}>
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center">
+          <img className="w-44 h-auto animate-bounce" src={loader} alt="" />
+        </div>
+      }
+    >
       <Router>
         <Navbar />
         <Routes>

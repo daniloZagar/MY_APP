@@ -1,31 +1,37 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from 'react';
 
-const cache: any = {};
-const useFetch = (url: string) => {
-  const [status, setStatus] = useState("idle");
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    if (!url) return;
-    const fetchData = async () => {
-      setStatus("fetching");
-      if (cache[url]) {
-        const data = cache[url];
-        setData(data);
-        setStatus("fetched");
-      } else {
-        const response = await fetch(url);
-        const data = await response.json();
-        cache[url] = data;
-        setData(data);
-        setStatus("fetched");
-      }
-    };
-
-    fetchData();
-  }, [url]);
-  console.log(data);
-  return { status, data };
+export type TApiResponse = {
+  status: Number;
+  statusText: String;
+  data: any;
+  error: any;
+  loading: Boolean;
 };
 
-export default useFetch;
+export const useFetch = (url: string): TApiResponse => {
+  const [status, setStatus] = useState<Number>(0);
+  const [statusText, setStatusText] = useState<String>('');
+  const [data, setData] = useState<any>();
+  const [error, setError] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const getAPIData = async () => {
+    setLoading(true);
+    try {
+      const apiResponse = await fetch(url);
+      const json = await apiResponse.json();
+      setStatus(apiResponse.status);
+      setStatusText(apiResponse.statusText);
+      setData(json);
+    } catch (error) {
+      setError(error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getAPIData();
+  }, []);
+
+  return { status, statusText, data, error, loading };
+};
