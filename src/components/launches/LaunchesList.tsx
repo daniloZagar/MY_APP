@@ -37,6 +37,7 @@ export default function LaunchesList() {
     if (offset <= launches.length) {
       getLaunches();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
   useEffect(() => {
     const currentElement = lastElement;
@@ -62,7 +63,7 @@ export default function LaunchesList() {
               <LaunchesItem
                 flight_number={launch.flight_number}
                 mission_name={launch.mission_name}
-                mission_patch_small={launch.links.mission_patch_small}
+                links={launch.links.mission_patch_small}
                 launch_year={launch.launch_year}
               ></LaunchesItem>
             </Link>

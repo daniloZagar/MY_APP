@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import ILaunchesData from '../types/launches.type';
 
 export type TApiResponse = {
   status: Number;
   statusText: String;
-  data: any;
+  data: ILaunchesData;
   error: any;
   loading: Boolean;
 };

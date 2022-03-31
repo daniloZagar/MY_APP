@@ -4,6 +4,7 @@ import Navbar from "./components/navbar/Navbar";
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import LaunchesDetails from "./views/LaunchesDetails";
 import loader from "./assets/images/loader.png";
+import Quote from "./views/Quote";
 const Home = lazy(() => import("./views/Home"));
 const Launches = lazy(() => import("./views/Launches"));
 const NotFoundPage = lazy(() => import("./views/NotFoundPage"));
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/launches" element={<Launches />}></Route>
+          <Route path="/quote" element={<Quote />}></Route>
           <Route path="/launches/:id" element={<LaunchesDetails />}></Route>
           <Route element={NotFoundPage}></Route>
         </Routes>
